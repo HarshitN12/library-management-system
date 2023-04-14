@@ -1,0 +1,780 @@
+"""
+The following program represents a digital database management system for the sales department
+where all the data could be recorded and manipulated with great ease.
+
+
+"""
+
+import mysql.connector as mycon
+
+db = mycon.connect(host='localhost', user='root', passwd='krish2003', database='sales_management')
+cursor = db.cursor()
+print('{:10}{:^48}\n'.format('', 'SALES MANAGEMENT SYSTEM'))
+
+
+def mainmenu():
+    ''' It starts the program.'''
+    print('{:10}{:50}'.format('', '*' * 50))
+    print('{:10}{:<48}'.format('', ' Press ( 1 ) to  L O G I N '))
+    print('{:10}{:<48}'.format('', ' Press ( 2 ) to  A D D   A C C O U N T '))
+    print('{:10}{:<48}'.format('', ' Press ( 3 ) to  E X I T '))
+    print('{:10}{:50}'.format('', '*' * 50))
+    print('\n')
+    inp = input("Enter your Choice : ")
+    if inp == '1':
+        login()  # login program runs
+    elif inp == '2':
+        insert('employee')  # inserting employee details
+        mainmenu()
+    elif inp == '3':
+        print('{:10}{:^48}{:10}'.format('' * 10, "G O O D B Y E ! WE WERE HAPPY TO SERVE YOU :)", '' * 10))
+    else:
+        print('I N V A L I D   I N P U T  !  Please enter a valid choice')
+        print('\n')
+        mainmenu()
+
+
+def afterlogin(x):
+    '''Provides user the access to database and allows them to manipulate the data.'''
+    print('\n')
+    print('{:10}{:50}'.format('', '*' * 50))
+    print('{:10}{:^48}'.format('', " W E L C O M E "))
+    print('{:10}{:^48}'.format('', 'Which section you want to use ?'))
+    print('{:10}{:<48}'.format('', ' Press ( 1 ) to Logout'))
+    print('{:10}{:<48}'.format('', ' Press ( 2 ) for Myinfo'))
+    print('{:10}{:<48}'.format('', ' Press ( 3 ) for Products'))
+    print('{:10}{:<48}'.format('', ' Press ( 4 ) for Customers'))
+    print('{:10}{:<48}'.format('', ' Press ( 5 ) for Orders'))
+    if x[0] == 'm':  # checking whether user is manager
+        print('{:10}{:<48}'.format('', ' Press ( 6 ) for Employees'))
+    print('{:10}{:50}'.format('', '*' * 50))
+    chc = input('Enter your choice: ')
+    print('\n')
+    if chc == '1':
+        mainmenu()
+    elif chc == '2':
+        Myinfo(x)  # providing personal info
+    elif chc == '3':
+        while True:
+            print('{:10}{:50}'.format('', '*' * 50))
+            print('{:10}{:^48}'.format('', ' WELCOME  TO  PRODUCT SECTION '))
+            print('{:10}{:<48}'.format('', ' Press ( 1 ) for Adding'))
+            print('{:10}{:<48}'.format('', ' Press ( 2 ) for Searching'))
+            print('{:10}{:<48}'.format('', ' Press ( 3 ) for Updating'))
+            print('{:10}{:<48}'.format('', ' Press ( 4 ) to go BACK'))
+            print('{:10}{:50}'.format('', '*' * 50))
+            choice = input('Enter your choice : ')
+            if choice == '1':
+                insert('product')  # inserting product details
+            elif choice == '2':
+                search('product')  # searching product
+            elif choice == '3':
+                update('product', x)
+            elif choice == '4':
+                break
+            else:
+                print('I N V A L I D   I N P U T  !  Please enter a valid choice')
+            print('\n')
+        afterlogin(x)
+    elif chc == '4':
+        while True:
+            print('{:10}{:50}'.format('', '*' * 50))
+            print('{:10}{:^48}'.format('', ' WELCOME  TO  CUSTOMER SECTION '))
+            print('{:10}{:<48}'.format('', ' Press ( 1 ) for Adding'))
+            print('{:10}{:<48}'.format('', ' Press ( 2 ) for Searching'))
+            print('{:10}{:<48}'.format('', ' Press ( 3 ) for Updating'))
+            print('{:10}{:<48}'.format('', ' Press ( 4 ) to go BACK'))
+            print('{:10}{:50}'.format('', '*' * 50))
+            choice = input('Enter your choice : ')
+            if choice == '1':
+                insert('customer')  # inserting customer details
+            elif choice == '2':
+                search('customer')  # searching customer
+            elif choice == '3':
+                update('customer', x)
+            elif choice == '4':
+                break
+            else:
+                print('I N V A L I D   I N P U T  !  Please enter a valid choice')
+            print('\n')
+        afterlogin(x)
+    elif chc == '5':
+        while True:
+            print('{:10}{:50}'.format('', '*' * 50))
+            print('{:10}{:^48}'.format('', ' WELCOME  TO  ORDER SECTION '))
+            print('{:10}{:<48}'.format('', ' Press ( 1 ) for Adding'))
+            print('{:10}{:<48}'.format('', ' Press ( 2 ) for Searching'))
+            print('{:10}{:<48}'.format('', ' Press ( 3 ) to go BACK'))
+            print('{:10}{:50}'.format('', '*' * 50))
+            choice = input('Enter your choice : ')
+            if choice == '1':
+                addorder(x)  # inserting order details
+            elif choice == '2':
+                search('orders')  # searching orders
+            elif choice == '3':
+                break
+            else:
+                print('I N V A L I D   I N P U T  !  Please enter a valid choice')
+            print('\n')
+        afterlogin(x)
+    elif chc == '6':
+        if x[0] != 'm':  # checking if user is not manager
+            print('I N V A L I D   I N P U T  !  Please enter a valid choice')
+            afterlogin(x)
+        else:
+            while True:
+                print('{:10}{:50}'.format('', '*' * 50))
+                print('{:10}{:^48}'.format('', ' WELCOME  TO  EMPLOYEE SECTION '))
+                print('{:10}{:<48}'.format('', ' Press ( 1 ) for Searching'))  # searching employees
+                print('{:10}{:<48}'.format('', ' Press ( 2 ) to go BACK'))
+                print('{:10}{:50}'.format('', '*' * 50))
+                choice = input('Enter your choice : ')
+                if choice == '1':
+                    search('employee')
+                elif choice == '2':
+                    break
+                else:
+                    print('I N V A L I D   I N P U T  !  Please enter a valid choice')
+                print('\n')
+            afterlogin(x)
+    else:
+        print('I N V A L I D   I N P U T  !  Please enter a valid choice')
+        afterlogin(x)
+
+
+def Myinfo(e_id):
+    '''Provides the personal information of the employee that is currently logged in.'''
+    print('\n')
+    data = "select * from employee where emp_id = '{}'".format(e_id)
+    cursor.execute(data)  # getting details from the table
+    info = cursor.fetchall()
+    print('My ID : ', e_id)
+    print('My Name : ', info[0][1])
+    print('My Phone no. : ', info[0][2])
+    print('My Email ID. : ', info[0][3])
+    print('My Salary : ', info[0][4])
+    print('My Password : ', info[0][5])
+    print('\n')
+    print('Press ( 1 ) to go BACK')
+    print('Press ( 2 ) to UPDATE')
+    opt = input('Your Choice: ')
+    if opt in ['1', '2']:
+        if opt == '1':
+            afterlogin(e_id)
+        else:
+            update('employee', e_id)
+            afterlogin(e_id)
+    else:
+        print('I N V A L I D   I N P U T  !  Please enter a valid choice')
+        Myinfo(e_id)
+
+
+def login():
+    '''For logging into the system.'''
+    print('\n')
+    print("* L O G I N   P A G E *")
+    iden = input('Enter ID :')
+    pas = input('Enter Password : ')
+    st = 'select password from employee where EMP_ID="{}"'.format(iden)
+    cursor.execute(st)  # getting the password
+    rec = cursor.fetchall()
+    if rec == []:
+        print('O O P S ! Looks like this ID does not exists. Please try again.')
+        mainmenu()
+    elif rec[0][0] == pas:  # checking if password is correct
+        x = iden
+        afterlogin(x)
+    else:
+        print("W R O N G  P A S S W O R D ! Please try again.")
+        mainmenu()
+
+
+def insert(x):
+    '''To input details of Employees, Products and Customer into their respective tables.'''
+    print('\n')
+    iden = input('Enter ID: ')
+    if x == 'employee':
+        st = 'select EMP_ID from employee where EMP_ID="{}"'.format(iden)
+        cursor.execute(st)
+        rec = cursor.fetchall()
+        if rec == []:  # checking whether the id exists or not
+            name = input('Enter Name: ')
+            phn = int(input('Enter the Phone no. : '))
+            email = input('Enter the E-Mail : ')
+            sal = int(input('Enter the Salary : '))
+            pas = input('Enter Password: ')
+            print('Are you a manager? Type Y for yes and N for no')
+            man = input('Enter: ')
+            if man.upper() in ['Y', 'N']:
+                st = 'insert into employee(EMP_ID,EMP_NAME,PHONE_NO,EMAIL_ID,SALARY,password,MANAGER) values("{}","{}",{},"{}",{},"{}","{}")'.format(
+                    iden, name, phn, email, sal, pas, man.upper())
+                cursor.execute(st)
+                db.commit()
+                print(' * D A T A   A D D E D * ')
+            else:
+                print('I N V A L I D   I N P U T  !  Please enter a valid choice')
+        else:
+            print("This ID already exists. Please pick another ID")
+    elif x == 'product':
+        st = 'select PROD_ID from product where PROD_ID="{}"'.format(iden)
+        cursor.execute(st)
+        rec = cursor.fetchall()
+        if rec == []:  # checking whether the id exists or not
+            name = input('Enter Name: ')
+            price = int(input('Enter the Price : '))
+            inventory = int(input('Enter Inventory : '))
+            st = 'insert into product(PROD_ID,PROD_NAME,PRICE,INVENTORY) values("{}","{}",{},{})'.format(iden, name,
+                                                                                                         price,
+                                                                                                         inventory)
+            cursor.execute(st)
+            db.commit()
+            print(' * D A T A   A D D E D * ')
+        else:
+            print("This ID already exists. Please pick another ID")
+    elif x == 'customer':
+        st = 'select CUST_ID from customer where CUST_ID="{}"'.format(iden)
+        cursor.execute(st)
+        rec = cursor.fetchall()
+        if rec == []:  # checking whether the id exists or not
+            name = input('Enter Name: ')
+            phn = int(input('Enter the Phone No.: '))
+            st = 'insert into customer(CUST_ID,CUST_NAME,PHONE_NO)values("{}","{}",{})'.format(iden, name, phn)
+            cursor.execute(st)
+            db.commit()
+            print(' * D A T A   A D D E D * ')
+        else:
+            print("This ID already exists. Please pick another ID")
+
+
+def addorder(e_id):
+    '''To add Orders in their respective tables.'''
+    print('\n')
+    from datetime import datetime
+    st = 'select EMP_NAME from employee where EMP_ID="{}"'.format(e_id)
+    cursor.execute(st)
+    rec = cursor.fetchall()
+    e_name = rec[0][0]  # getting the name of the employee of the given id
+    print('emp_id :', e_id)
+    print('emp_name :', e_name)
+    order_id = input('enter the order_id: ')
+    st = 'select ORDER_ID from orders where ORDER_ID="{}"'.format(order_id)
+    cursor.execute(st)
+    rec = cursor.fetchall()
+    if rec == []:  # checking whether the order id exists or not
+        cust_id = input('enter the cust_id: ')
+        st1 = 'select CUST_NAME from customer where CUST_ID="{}"'.format(cust_id)
+        cursor.execute(st1)
+        rec1 = cursor.fetchall()
+        if rec1 == []:  # checking whether the cust id exists or not
+            print('This ID does not exists. Please try again.')
+        else:
+            cust_name = rec1[0][0]  # getting the name of the customer of the given id
+            print('Name of the customer is : ', cust_name)
+            now = datetime.now()
+            formatted_date = now.strftime('%Y-%m-%d')  # getting the current date
+            st2 = 'insert into orders(EMP_ID,EMP_NAME,CUST_ID,CUST_NAME,DATE,ORDER_ID) values("{}","{}","{}","{}","{}","{}")'.format(
+                e_id, e_name, cust_id, cust_name, formatted_date, order_id)
+            cursor.execute(st2)
+            db.commit()
+            ct = 0
+            while True:
+                print('Press 1 to ADD product or 2 to EXIT')
+                chc = input('Enter your choice: ')
+                if chc == '1':
+                    prod_id = input('Enter the Product ID: ')
+                    st3 = 'select PROD_NAME from product where PROD_ID="{}"'.format(prod_id)
+                    cursor.execute(st3)
+                    rec3 = cursor.fetchall()
+                    if rec3 == []:  # checking whether the prod id exists or not
+                        print('This ID does not exists.Please try again.')
+                        continue
+                    prod_name = rec3[0][0]  # getting the name of the product of the given id
+                    print('Name of the product is : ', prod_name)
+                    quan = int(input('Enter the Quantity : '))
+                    st4 = 'select INVENTORY from product where PROD_ID="{}"'.format(prod_id)
+                    cursor.execute(st4)
+                    rec4 = cursor.fetchall()
+                    inv = rec4[0][0]  # getting the quantity of product in stock
+                    print('Do you want to proceed with your order ? ')
+                    print('Enter ( Y ) for Proceeding or ( C ) for Cancelling this Order')
+                    opt = input('Please enter your option : ')
+                    if opt.upper() == 'C':
+                        continue
+                    elif opt.upper() == 'Y':
+                        if inv < quan:  # checking whether entered quantity is not greater than quantity in stock
+                            print('SORRY ! , currently the Item out of stock, Please try again later.')
+                            continue
+                        elif quan <= 0:  # checking whether entered quantity is not less than 1
+                            print('I N V A L I D   I N P U T  !  Please enter a valid choice')
+                            continue
+                        else:
+                            ct += 1  # indicating product(s) is added in the order
+                            inv -= quan  # reducing the quantity in stock
+                            st5 = 'insert into orderline(ORDER_ID,PROD_ID,PROD_NAME,QUANTITY) values("{}","{}","{}",{})'.format(
+                                order_id, prod_id, prod_name, quan)
+                            st6 = 'update product set INVENTORY={} where PROD_ID="{}"'.format(inv, prod_id)
+                            cursor.execute(st5)
+                            db.commit()
+                            cursor.execute(st6)
+                            db.commit()
+                            print(' * P R O D U C T   A D D E D * ')
+                    else:
+                        print('I N V A L I D   I N P U T  !  Please enter a valid choice')
+                elif chc == '2':
+                    break
+                else:
+                    print('I N V A L I D   I N P U T  !  Please enter a valid choice')
+            if ct == 0:  # checking if no product was added due to wrong inputs
+                st7 = 'delete from orders where order_id="{}"'.format(order_id)
+                cursor.execute(st7)
+                db.commit()
+    else:
+        print("This ID already exists. Please pick another ID")
+
+
+def search(field):
+    '''To search details of Employees, Products, Customers and Orders from their respective tables.'''
+    print('\n')
+    if field == "employee":
+        print('{:10}{:50}'.format('', '*' * 50))
+        print('{:10}{:^48}'.format('', "What do you want to search by ?"))
+        print('{:10}{:<48}'.format('', " Press ( 1 ) to search by Employee ID "))
+        print('{:10}{:<48}'.format('', " Press ( 2 ) to search by Employee Name "))
+        print('{:10}{:<48}'.format('', " Press ( 3 ) to search by Employee Salary "))
+        print('{:10}{:<48}'.format('', " Press ( 4 ) to Display All"))
+        print('{:10}{:50}'.format('', '*' * 50))
+        choice = input("Enter your Choice : ")
+        if choice in ('1', '2', '3', '4'):
+            if choice == '1':
+                empid = input("Enter the ID you want to search for : ")
+                data = "select emp_id,emp_name,email_id,phone_no,salary from employee where emp_id = '{}'".format(empid)
+            elif choice == '2':
+                empname = input("Enter the Name you want to search for : ")
+                data = "select emp_id,emp_name,email_id,phone_no,salary from employee where emp_name like '%{}%'".format(
+                    empname)
+            elif choice == '3':
+                sal = int(input("Enter the Salary you want to search for : "))
+                print("Press ( H ) to search for employees with salary MORE than and equal to the input")
+                print("Press ( L ) to search for employees with salary LESS than and equal to input")
+                hilo = input("Enter your choice : ").upper()
+                if hilo == 'H':
+                    data = "select emp_id,emp_name,email_id,phone_no,salary from employee where salary >= {}".format(
+                        sal)
+                elif hilo == 'L':
+                    data = "select emp_id,emp_name,email_id,phone_no,salary from employee where salary <= {}".format(
+                        sal)
+                else:
+                    data = "select emp_id,emp_name,email_id,phone_no,salary from employee where salary = {}".format(sal)
+                    print(
+                        'I N V A L I D   I N P U T  !  Please enter a valid choice. Data equal to the salary will be searched. ')
+            elif choice == '4':
+                data = 'select emp_id,emp_name,email_id,phone_no,salary from employee'
+            cursor.execute(data)
+            info = cursor.fetchall()
+            print(("{:10} {:30} {:40} {:12} {:7}".format('EMP_ID', 'EMP_NAME', 'EMAIL_ID', 'PHONE_NO', 'SALARY')).strip(
+                ','))
+            if info == []:  # checking whether the data exists or not
+                print("OOPS! Seems like you have entered a wrong data. Please try again")
+            else:
+                for i in info:
+                    print("{:10} {:30} {:40} {:10} {:7}".format(i[0], i[1], i[2], i[3], i[4]))
+        else:
+            print('I N V A L I D   I N P U T  !  Please enter a valid choice')
+
+    elif field == "product":
+        print('{:10}{:80}'.format('', '*' * 80))
+        print('{:10}{:^78}'.format('', "What do you want to search by ?"))
+        print('{:10}{:<78}'.format('', " Press ( 1 ) to search by ID of the Product"))
+        print('{:10}{:<78}'.format('', " Press ( 2 ) to search by Name of the Product"))
+        print('{:10}{:<78}'.format('', " Press ( 3 ) to search by Price of the Product"))
+        print('{:10}{:<78}'.format('', " Press ( 4 ) to search by Quantity of the Product from Inventory"))
+        print('{:10}{:<78}'.format('', " Press ( 5 ) to Display All"))
+        print('{:10}{:80}'.format('', '*' * 80))
+
+        choice = input("Enter your Choice : ")
+        if choice in ('1', '2', '3', '4', '5'):
+            if choice == '1':
+                prodid = input("Enter the ID of the Product you want to search for : ")
+                data = "select * from product where prod_id='{}'".format(prodid)
+            elif choice == '2':
+                prodname = input("Enter the Name of the Product you want to search for : ")
+                data = "select * from product where prod_name like '%{}%'".format(prodname)
+            elif choice == '3':
+                price = int(input("Enter the Price of the Product you want to search for : "))
+                print("Press ( H ) to search for products with price MORE than and equal to the input")
+                print("Press ( L ) to search for products with price LESS than and equal to the input")
+                hilo = input("Enter your choice : ").upper()
+                if hilo == 'H':
+                    data = "select * from product where price >={}".format(price)
+                elif hilo == 'L':
+                    data = "select * from product where price <={}".format(price)
+                else:
+                    data = "select * from product where price ={}".format(price)
+                    print(
+                        'I N V A L I D   I N P U T  !  Please enter a valid choice. Data equal to the price will be searched.')
+            elif choice == '4':
+                quan = int(input("Enter the Quantity of the Product you want to search for : "))
+                print("Press ( H ) to search for products with quantity MORE than and equal to the input")
+                print("Press ( L ) to search for products with quantity LESS than and equal to the input")
+                hilo = input("Enter your choice : ").upper()
+                if hilo == 'H':
+                    data = "select * from product where inventory >= {}".format(quan)
+                elif hilo == 'L':
+                    data = "select * from product where inventory <= {}".format(quan)
+                else:
+                    data = "select * from product where inventory ={}".format(quan)
+                    print(
+                        'I N V A L I D   I N P U T  !  Please enter a valid choice. Data equal to the quantity will be searched.')
+            elif choice == '5':
+                data = 'select * from product'
+            cursor.execute(data)
+            info = cursor.fetchall()
+            print("{:10} {:32} {:6} {:10}".format('PROD_ID', 'PROD_NAME', 'PRICE', 'INVENTORY'))
+            if info == []:  # checking whether the data exists or not
+                print("OOPS! Seems like you have entered a wrong data. Please try again")
+            else:
+                for i in info:
+                    print("{:10} {:30} {:6} {:5}".format(i[0], i[1], i[2], i[3]))
+        else:
+            print('I N V A L I D   I N P U T  !  Please enter a valid choice')
+
+    elif field == "orders":
+        print('{:10}{:50}'.format('', '*' * 50))
+        print('{:10}{:^48}'.format('', "What do you want to search by ?"))
+        print('{:10}{:<48}'.format('', " Press ( 1 ) to search by ID of the Order "))
+        print('{:10}{:<48}'.format('', " Press ( 2 ) to search by ID of the Customer"))
+        print('{:10}{:<48}'.format('', " Press ( 3 ) to search by ID of the Employee "))
+        print('{:10}{:<48}'.format('', " Press ( 4 ) to search by ID of the Product"))
+        print('{:10}{:<48}'.format('', " Press ( 5 ) to search by Quantity of order"))
+        print('{:10}{:<48}'.format('', " Press ( 6 ) to Display All"))
+        print('{:10}{:50}'.format('', '*' * 50))
+        choice = input("Enter your Choice : ")
+        if choice in ('1', '2', '3', '4', '5', '6'):
+            if choice == '1':
+                orderid = input("Enter the ID of the Order you want to search for : ")
+                data = "select * from orders where order_id='{}'".format(orderid)
+                data2 = "select * from orderline where order_id='{}'".format(orderid)
+                cursor.execute(data2)
+                info1 = cursor.fetchall()
+                print("{:10} {:10} {:30} {:11}".format('ORDER_ID', 'PROD_ID', 'PROD_NAME', 'QUANTITY'))
+                if info1 == []:  # checking whether the data exists or not
+                    print("OOPS! Seems like you have entered a wrong data. Please try again")
+                else:
+                    for i in info1:
+                        print("{:10} {:10} {:30} {:5}".format(i[0], i[1], i[2], i[3]))
+                print('\n')
+                print("{:10} {:30} {:10} {:31} {:11} {:10}".format('EMP_ID', 'EMP_NAME', 'CUST_ID', 'CUST_NAME', 'DATE',
+                                                                   'ORDER_ID'))
+            elif choice == '2':
+                custid = input("Enter the ID of the Customer you want to search by : ")
+                data = "select * from orders where cust_id = '{}'".format(custid)
+                cursor.execute("select order_id from orders where cust_id='{}'".format(custid))
+                orderrec = cursor.fetchall()
+                if orderrec != []:
+                    print("{:10} {:10} {:30} {:11}".format('ORDER_ID', 'PROD_ID', 'PROD_NAME', 'QUANTITY'))
+                    for i in orderrec:
+                        orderid = i[0]
+                        data2 = 'select * from orderline where order_id="{}"'.format(orderid)
+                        cursor.execute(data2)
+                        info1 = cursor.fetchall()
+                        if info1 == []:  # checking whether the data exists or not
+                            print("OOPS! Seems like you have entered a wrong data. Please try again")
+                        else:
+                            for i in info1:
+                                print("{:10} {:10} {:30} {:5}".format(i[0], i[1], i[2], i[3]))
+                    print('\n')
+                    print("{:10} {:30} {:10} {:31} {:11} {:10}".format('EMP_ID', 'EMP_NAME', 'CUST_ID', 'CUST_NAME',
+                                                                       'DATE', 'ORDER_ID'))
+            elif choice == '3':
+                empid = input("Enter the ID of the Employee you want to search by : ")
+                data = "select * from orders where emp_id = '{}'".format(empid)
+                cursor.execute("select order_id from orders where emp_id='{}'".format(empid))
+                orderrec = cursor.fetchall()
+                if orderrec != []:
+                    print("{:10} {:10} {:30} {:11}".format('ORDER_ID', 'PROD_ID', 'PROD_NAME', 'QUANTITY'))
+                    for i in orderrec:
+                        orderid = i[0]
+                        data2 = 'select * from orderline where order_id="{}"'.format(orderid)
+                        cursor.execute(data2)
+                        info1 = cursor.fetchall()
+                        if info1 == []:  # checking whether the data exists or not
+                            print("OOPS! Seems like you have entered a wrong data. Please try again")
+                        else:
+                            for i in info1:
+                                print("{:10} {:10} {:30} {:5}".format(i[0], i[1], i[2], i[3]))
+                    print('\n')
+                    print("{:10} {:30} {:10} {:31} {:11} {:10}".format('EMP_ID', 'EMP_NAME', 'CUST_ID', 'CUST_NAME',
+                                                                       'DATE', 'ORDER_ID'))
+            elif choice == '4':
+                prodid = input("Enter the ID of the Product you want to search by : ")
+                data = "select * from orderline where prod_id = '{}'".format(prodid)
+                cursor.execute("select order_id from orderline where prod_id='{}'".format(prodid))
+                orderrec = cursor.fetchall()
+                if orderrec != []:
+                    print("{:10} {:30} {:10} {:31} {:11} {:10}".format('EMP_ID', 'EMP_NAME', 'CUST_ID', 'CUST_NAME',
+                                                                       'DATE', 'ORDER_ID'))
+                    for i in orderrec:
+                        orderid = i[0]
+                        data2 = 'select * from orders where order_id="{}"'.format(orderid)
+                        cursor.execute(data2)
+                        info1 = cursor.fetchall()
+                        if info1 == []:  # checking whether the data exists or not
+                            print("OOPS! Seems like you have entered a wrong data. Please try again")
+                        else:
+                            for i in info1:
+                                print("{:10} {:30} {:10} {:30} ".format(i[0], i[1], i[2], i[3]), i[4], "  ",
+                                      "{:10}".format(i[5]))
+                    print('\n')
+                    print("{:10} {:10} {:30} {:11}".format('ORDER_ID', 'PROD_ID', 'PROD_NAME', 'QUANTITY'))
+            elif choice == '5':
+                quan = int(input("Enter the Quantity of the order you want to search by : "))
+                print("Press ( H ) to search for orders with quantity MORE than and equal to the input")
+                print("Press ( L ) to search for orders with quantity LESS than and equal to the input")
+                hilo = input("Enter your choice : ").upper()
+                if hilo == 'H':
+                    data = "select * from orderline where quantity >= {}".format(quan)
+                    cursor.execute("select order_id from orderline where quantity >={}".format(quan))
+                    orderrec = cursor.fetchall()
+                    if orderrec != []:
+                        print("{:10} {:30} {:10} {:31} {:11} {:10}".format('EMP_ID', 'EMP_NAME', 'CUST_ID', 'CUST_NAME',
+                                                                           'DATE', 'ORDER_ID'))
+                        for i in orderrec:
+                            orderid = i[0]
+                            data2 = 'select * from orders where order_id="{}"'.format(orderid)
+                            cursor.execute(data2)
+                            info1 = cursor.fetchall()
+                            if info1 == []:  # checking whether the data exists or not
+                                print("OOPS! Seems like you have entered a wrong data. Please try again")
+                            else:
+                                for i in info1:
+                                    print("{:10} {:30} {:10} {:30} ".format(i[0], i[1], i[2], i[3]), i[4], "  ",
+                                          "{:10}".format(i[5]))
+                        print('\n')
+                        print("{:10} {:10} {:30} {:11}".format('ORDER_ID', 'PROD_ID', 'PROD_NAME', 'QUANTITY'))
+                elif hilo == 'L':
+                    data = "select * from orderline where quantity <= {}".format(quan)
+                    cursor.execute("select order_id from orderline where quantity <={}".format(quan))
+                    orderrec = cursor.fetchall()
+                    if orderrec != []:
+                        print("{:10} {:30} {:10} {:31} {:11} {:10}".format('EMP_ID', 'EMP_NAME', 'CUST_ID', 'CUST_NAME',
+                                                                           'DATE', 'ORDER_ID'))
+                        for i in orderrec:
+                            orderid = i[0]
+                            data2 = 'select * from orders where order_id="{}"'.format(orderid)
+                            cursor.execute(data2)
+                            info1 = cursor.fetchall()
+                            if info1 == []:  # checking whether the data exists or not
+                                print("OOPS! Seems like you have entered a wrong data. Please try again")
+                            else:
+                                for i in info1:
+                                    print("{:10} {:30} {:10} {:30} ".format(i[0], i[1], i[2], i[3]), i[4], "  ",
+                                          "{:10}".format(i[5]))
+                        print('\n')
+                        print("{:10} {:10} {:30} {:11}".format('ORDER_ID', 'PROD_ID', 'PROD_NAME', 'QUANTITY'))
+                else:
+                    data = "select * from orderline where quantity ={}".format(quan)
+                    print(
+                        'I N V A L I D   I N P U T  !  Please enter a valid choice.Data equal to the quantity will be searched. ')
+                    cursor.execute("select order_id from orderline where quantity ={}".format(quan))
+                    orderrec = cursor.fetchall()
+                    if orderrec != []:
+                        print("{:10} {:30} {:10} {:31} {:11} {:10}".format('EMP_ID', 'EMP_NAME', 'CUST_ID', 'CUST_NAME',
+                                                                           'DATE', 'ORDER_ID'))
+                        for i in orderrec:
+                            orderid = i[0]
+                            data2 = 'select * from orders where order_id="{}"'.format(orderid)
+                            cursor.execute(data2)
+                            info1 = cursor.fetchall()
+                            if info1 == []:  # checking whether the data exists or not
+                                print("OOPS! Seems like you have entered a wrong data. Please try again")
+                            else:
+                                for i in info1:
+                                    print("{:10} {:30} {:10} {:30} ".format(i[0], i[1], i[2], i[3]), i[4], "  ",
+                                          "{:10}".format(i[5]))
+                        print('\n')
+                        print("{:10} {:10} {:30} {:11}".format('ORDER_ID', 'PROD_ID', 'PROD_NAME', 'QUANTITY'))
+            elif choice == '6':
+                data = "select * from orders"
+                data2 = 'select * from orderline'
+                cursor.execute(data2)
+                info1 = cursor.fetchall()
+                if info1 == []:  # checking whether the data exists or not
+                    print("OOPS! Seems like you have entered a wrong data. Please try again")
+                else:
+                    print("{:10} {:10} {:30} {:11}".format('ORDER_ID', 'PROD_ID', 'PROD_NAME', 'QUANTITY'))
+                    for i in info1:
+                        print("{:10} {:10} {:30} {:5}".format(i[0], i[1], i[2], i[3]))
+                print('\n')
+                print("{:10} {:30} {:10} {:31} {:11} {:10}".format('EMP_ID', 'EMP_NAME', 'CUST_ID', 'CUST_NAME', 'DATE',
+                                                                   'ORDER_ID'))
+            cursor.execute(data)
+            info = cursor.fetchall()
+            if info == []:  # checking whether the data exists or not
+                print("OOPS! Seems like you have entered a wrong data. Please try again")
+            elif len(info[0]) == 6:
+                for i in info:
+                    print("{:10} {:30} {:10} {:30} ".format(i[0], i[1], i[2], i[3]), i[4], "  ", "{:10}".format(i[5]))
+            elif len(info[0]) == 4:
+                for i in info:
+                    print("{:10} {:10} {:30} {:5}".format(i[0], i[1], i[2], i[3]))
+        else:
+            print('I N V A L I D   I N P U T  !  Please enter a valid choice')
+    elif field == "customer":
+        print('{:10}{:50}'.format('', '*' * 50))
+        print('{:10}{:^48}'.format('', "What do you want to search by ?"))
+        print('{:10}{:<48}'.format('', " Press ( 1 ) to search by ID of the Customer "))
+        print('{:10}{:<48}'.format('', " Press ( 2 ) to search by Name of the Customer "))
+        print('{:10}{:<48}'.format('', " Press ( 3 ) to Display All"))
+        print('{:10}{:50}'.format('', '*' * 50))
+        choice = input("Enter your Choice : ")
+        if choice in ('1', '2', '3'):
+            if choice == '1':
+                custid = input("Enter the ID of the Customer you want to search for : ")
+                data = "select * from customer where cust_id='{}'".format(custid)
+            elif choice == '2':
+                custname = input("Enter the Name of the Customer you want to search for : ")
+                data = "select * from customer where cust_name like '%{}%'".format(custname)
+            elif choice == '3':
+                data = "select * from customer"
+            cursor.execute(data)
+            info = cursor.fetchall()
+            print("{:10} {:32} {:11}".format('CUST_ID', 'CUST_NAME', 'PHONE_NO'))
+            if info == []:  # checking whether the data exists or not
+                print("OOPS! Seems like you have entered a wrong data. Please try again")
+            else:
+                for i in info:
+                    print("{:10} {:30} {:11}".format(i[0], i[1], i[2]))
+        else:
+            print('I N V A L I D   I N P U T  !  Please enter a valid choice')
+
+
+def update(field, e_id):
+    ''' To update personal information , details of Products and Customers'''
+    if field == 'employee':
+        print("These are the recorded data :")
+        print("{:10} {:32} {:10} {:42} {:6} {:25} {:10}".format('EMP_ID', 'EMP_NAME', 'PHONE_NO', 'EMAIL_ID', 'SALARY',
+                                                                'PASSWORD', 'MANAGER'))
+        data = ("select * from employee where emp_id='{}'").format(e_id)
+        cursor.execute(data)
+        rec1 = cursor.fetchall()
+        for i in rec1:
+            print("{:10} {:30} {:12} {:40} {:8} {:25} {:5}".format(i[0], i[1], i[2], i[3], i[4], i[5],
+                                                                   i[6]))  # printing the original data
+        print('{:10}{:50}'.format('', '*' * 50))
+        print('{:10}{:^48}'.format('', "What do you want to update ?"))
+        print('{:10}{:<48}'.format('', " Press ( 1 ) to update your Phone No."))
+        print('{:10}{:<48}'.format('', " Press ( 2 ) to update your E-Mail ID"))
+        print('{:10}{:<48}'.format('', " Press ( 3 ) to update your Password"))
+        print('{:10}{:50}'.format('', '*' * 50))
+        ch1 = input("Enter your choice : ")
+        print()
+        flag = True
+        if ch1 in ['1', '2', '3']:
+            if ch1 == '1':
+                updt = int(input("Enter the new Phone Number : "))
+                up_data = ("update employee set phone_no = {} where emp_id='{}' ").format(updt, e_id)
+            elif ch1 == '2':
+                updt = input("Enter the new E-Mail ID : ")
+                up_data = ("update employee set email_id = '{}' where emp_id='{}' ").format(updt, e_id)
+            elif ch1 == '3':
+                updt1 = input("Enter your old Password : ")
+                chck_data = ("select password from employee where emp_id='{}'").format(e_id)
+                cursor.execute(chck_data)
+                oldpass = cursor.fetchall()
+                if oldpass[0][0] == updt1:  # checking if the password given is same as the original one
+                    updt = input("Enter New Password : ")
+                    up_data = ("update employee set password='{}' where emp_id='{}' ").format(updt, e_id)
+                else:
+                    flag = False
+                    print("I N C O R R E C T   P A S S W O R D  !")
+        if flag == True:
+            print("The new details are : ")
+            cursor.execute(up_data)
+            db.commit()
+            data1 = ("select * from employee where emp_id='{}'").format(e_id)
+            cursor.execute(data1)
+            rec = cursor.fetchall()
+            print("{:10} {:32} {:10} {:42} {:6} {:25} {:10}".format('EMP_ID', 'EMP_NAME', 'PHONE_NO', 'EMAIL_ID',
+                                                                    'SALARY', 'PASSWORD', 'MANAGER'))
+            for i in rec:
+                print("{:10} {:30} {:12} {:40} {:8} {:25} {:5}".format(i[0], i[1], i[2], i[3], i[4], i[5],
+                                                                       i[6]))  # printing the updated data
+        else:
+            print('I N V A L I D   I N P U T  !  Please enter a valid choice')
+
+    elif field == 'product':
+        p_id = input("Enter the Product ID : ")
+        print()
+        data = ("select * from product where prod_id='{}'").format(p_id)
+        cursor.execute(data)
+        rec2 = cursor.fetchall()
+        if rec2 == []:  # checking whether the prod id exists or not
+            print('This ID does not exist. Please try again.')
+        else:
+            print("These are the recorded data :")
+            print("{:10} {:32} {:6} {:10}".format('PROD_ID', 'PROD_NAME', 'PRICE', 'INVENTORY'))
+            for i in rec2:
+                print("{:10} {:30} {:6} {:5}".format(i[0], i[1], i[2], i[3]))  # printing the original data
+            print('{:10}{:50}'.format('', '*' * 50))
+            print('{:10}{:^48}'.format('', "What do you want to update ?"))
+            print('{:10}{:<48}'.format('', " Press ( 1 ) to update the Product Name"))
+            print('{:10}{:<48}'.format('', " Press ( 2 ) to update the Product Price"))
+            print('{:10}{:<48}'.format('', " Press ( 3 ) to add units of the Product"))
+            print('{:10}{:50}'.format('', '*' * 50))
+            ch1 = input("Enter your choice : ")
+            print()
+            if ch1 in ['1', '2', '3']:
+                if ch1 == '1':
+                    updt = input("Enter the new Product Name : ")
+                    up_data = ("update product set prod_name = '{}' where prod_id='{}' ").format(updt, p_id)
+                elif ch1 == '2':
+                    updt = int(input("Enter the new Product Price : "))
+                    up_data = ("update product set price = {} where prod_id='{}' ").format(updt, p_id)
+                elif ch1 == '3':
+                    updt = int(input("Enter the amount of new units of the product : "))
+                    up_data = ("update product set inventory = inventory + {} where prod_id='{}' ").format(updt, p_id)
+                cursor.execute(up_data)
+                db.commit()
+                data1 = ("select * from product where prod_id='{}'").format(p_id)
+                cursor.execute(data1)
+                rec = cursor.fetchall()
+                print("{:10} {:32} {:6} {:10}".format('PROD_ID', 'PROD_NAME', 'PRICE', 'INVENTORY'))
+                for i in rec:
+                    print("{:10} {:30} {:6} {:5}".format(i[0], i[1], i[2], i[3]))  # printing the updated data
+            else:
+                print('I N V A L I D   I N P U T  !  Please enter a valid choice')
+    elif field == 'customer':
+        c_id = input("Enter the Customer ID : ")
+        print()
+        data = ("select * from customer where cust_id='{}'").format(c_id)
+        cursor.execute(data)
+        rec3 = cursor.fetchall()
+        if rec3 == []:  # checking whether the cust id exists or not
+            print('This ID does not exist. Please try again.')
+        else:
+            print("These are the recorded data :")
+            print("{:10} {:32} {:11}".format('CUST_ID', 'CUST_NAME', 'PHONE_NO'))
+            for i in rec3:
+                print("{:10} {:30} {:11}".format(i[0], i[1], i[2]))  # printing the original data
+            print('{:10}{:50}'.format('', '*' * 50))
+            print('{:10}{:^48}'.format('', "What do you want to update ?"))
+            print('{:10}{:<48}'.format('', " Press ( 1 ) to update the Phone no. of the Customer"))
+            print('{:10}{:50}'.format('', '*' * 50))
+            ch1 = input("Enter your choice : ")
+            print()
+            if ch1 == '1':
+                updt = int(input("Enter the new Customer Phone No. : "))
+                up_data = ("update customer set phone_no = {} where cust_id='{}' ").format(updt, c_id)
+                cursor.execute(up_data)
+                db.commit()
+                data1 = ("select * from customer where cust_id='{}'").format(c_id)
+                cursor.execute(data1)
+                rec = cursor.fetchall()
+                print("{:10} {:32} {:11}".format('CUST_ID', 'CUST_NAME', 'PHONE_NO'))
+                for i in rec:
+                    print("{:10} {:30} {:11}".format(i[0], i[1], i[2]))  # printing the updated data
+            else:
+                print('I N V A L I D   I N P U T  !  Please enter a valid choice')
+
+
+mainmenu()
